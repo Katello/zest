@@ -1,0 +1,10 @@
+---
+- name: 'Destroy boxes'
+  command: "vagrant destroy -f {{ pulplift_boxes.keys()|join(' ') }}"
+  args:
+    chdir: "{{ current_directory }}"
+
+- name: 'Remove box file'
+  file:
+    path: "{{ current_directory }}/vagrant/boxes.d/80-tmp-{{ pulplift_name }}.yaml"
+    state: "absent"

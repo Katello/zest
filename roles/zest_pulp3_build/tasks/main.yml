@@ -1,0 +1,54 @@
+- name: "ensure dependencies are installed"
+  become: true
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - java
+      - rubygems
+
+- name: "Create work directory"
+  file:
+    path: pulp3_gem
+    state: directory
+
+- name: "Download swagger cli jar"
+  get_url:
+    url: http://central.maven.org/maven2/io/swagger/swagger-codegen-cli/2.3.1/swagger-codegen-cli-2.3.1.jar
+    force: true
+    dest: "{{ jar_location }}"
+
+- name: "Fetch api json"
+  get_url:
+    url:  "http://{{ inventory_hostname }}/pulp/api/v3/docs/api.json"
+    dest: ./api.json
+    force: true
+
+- name: "Fetch pulp status"
+  uri: 
+    url: http://{{ inventory_hostname }}/pulp/api/v3/status/
+    return_content: true
+  register: pulp_status
+
+- name: "Transform status into components"
+  set_fact:
+    pulp_components: "{% for version in pulp_status.json.versions %}{{ version.component }}-{{ version.version }} {% endfor %}"
+
+- name: write swagger config
+  template:
+    src: config.json
+    dest: config.json
+
+- name: "Generate gem files"
+  command: "java -jar {{ jar_location }}  generate -l ruby --config config.json  -i  api.json   -o pulp3_gem "
+
+- name: "Build gem" 
+  command: "gem build {{ gem_name }}.gemspec"
+  args:
+    chdir: pulp3_gem
+
+- name: "copy back built gem"
+  fetch:
+    src: "pulp3_gem/{{ gem_name }}-{{ gem_version }}.gem"
+    dest: ../
+    flat: yes
