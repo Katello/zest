@@ -1,0 +1,8 @@
+{
+  "gemName": "{{gem_name}}",
+  "gemVersion": "{{gem_version}}",
+  "gemLicense": "GPLv2",
+  "gemSummary": "Generated Api Bindings for Pulp3",
+  "gemDescription": "Generated Api bindings for Pulp3, built with the following components: {{ pulp_components }}"
+ }
+

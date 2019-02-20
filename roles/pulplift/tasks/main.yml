@@ -1,0 +1,19 @@
+---
+- set_fact:
+    current_directory: "{{ lookup('pipe','dirname `pwd`') }}"
+
+- name: 'Check variables defined'
+  fail:
+    msg: 'Please define pulplift_name which determines the file boxes are deployed to'
+  when: pulplift_name is undefined
+
+- name: 'Check pulplift state'
+  fail:
+    msg: 'Invalid value for the pulplift_state variable. Please use pass "-e "pulplift_state=up"" to spin up the boxes, "-e "pulplift_state=destroy"" to destroy the boxes, or "-e "pulplift_state=rebuild"" to destroy and then spin up the box.'
+  when: pulplift_state not in ('up', 'destroy', 'rebuild')
+
+- name: 'vagrant {{ pulplift_state }} boxes'
+  include_tasks: '{{ pulplift_state }}.yml'
+
+- name: 'Refresh inventory'
+  meta: refresh_inventory

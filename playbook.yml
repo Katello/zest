@@ -1,0 +1,12 @@
+- hosts: localhost
+  vars:
+    pulplift_name: zest-builder
+    pulplift_boxes:
+       zest-builder:
+         box: pulp3-sandbox-centos7
+  roles:
+    - pulplift
+
+- hosts: zest-builder
+  roles:
+    - zest_pulp3_build
