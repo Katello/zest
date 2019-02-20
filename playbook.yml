@@ -8,7 +8,5 @@
     - pulplift
 
 - hosts: zest-builder
-  vars:
-    gem_version: 0.0.2
   roles:
     - zest_pulp3_build

@@ -1,3 +1,8 @@
+- name: 'Check gem_version is passed'
+  fail:
+    msg: 'gem_version not defined. Please pass "-e gem_version=0.0.2"'
+  when:  not gem_version
+
 - name: "ensure dependencies are installed"
   become: true
   yum:
@@ -6,6 +11,11 @@
     packages:
       - java
       - rubygems
+
+- name: Clean work directory
+  file:
+    state: absent
+    path: "pulp3_gem"
 
 - name: "Create work directory"
   file:
